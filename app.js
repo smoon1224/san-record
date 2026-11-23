@@ -1,4 +1,6 @@
 const STORAGE_KEY = "san-record-ledger-v1";
+const PAGE_SIZE_STORAGE_KEY = "san-record-page-size-v1";
+const PAGE_SIZES = [20, 50, 100];
 const defaultState = {
   shops: ["지마켓", "쿠팡", "네이버쇼핑"].map((name) => ({ id: crypto.randomUUID(), name })),
   cards: ["신한하이", "현대카드", "국민카드"].map((name) => ({ id: crypto.randomUUID(), name })),
@@ -14,6 +16,7 @@ function loadState() {
     }
   } catch (error) {
     console.warn("저장된 구매 기록을 읽지 못했습니다.", error);
+    currentPage = 1;
   }
   return structuredClone(defaultState);
 }
@@ -23,6 +26,9 @@ let editingPurchaseId = null;
 let managingType = "shops";
 let editingListItemId = null;
 let toastTimer;
+let currentPage = 1;
+const storedPageSize = Number(localStorage.getItem(PAGE_SIZE_STORAGE_KEY));
+let pageSize = PAGE_SIZES.includes(storedPageSize) ? storedPageSize : 20;
 
 const purchaseForm = document.querySelector("#purchase-form");
 const shopSelect = document.querySelector("#purchase-shop");
@@ -36,6 +42,11 @@ const managerDialog = document.querySelector("#manager-dialog");
 const managerForm = document.querySelector("#manager-form");
 const managerName = document.querySelector("#manager-name");
 const managerList = document.querySelector("#manager-list");
+const pageSizeSelect = document.querySelector("#page-size");
+const pageRange = document.querySelector("#page-range");
+const pageNumber = document.querySelector("#page-number");
+const previousPageButton = document.querySelector("#previous-page");
+const nextPageButton = document.querySelector("#next-page");
 
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -92,9 +103,17 @@ function getVisiblePurchases() {
 function renderRecords() {
   const purchases = getVisiblePurchases();
   document.querySelector("#visible-count").textContent = new Intl.NumberFormat("ko-KR").format(purchases.length);
+  const pageCount = Math.max(1, Math.ceil(purchases.length / pageSize));
+  currentPage = Math.min(currentPage, pageCount);
+  const startIndex = (currentPage - 1) * pageSize;
+  const pagePurchases = purchases.slice(startIndex, startIndex + pageSize);
+  pageRange.textContent = `${purchases.length ? startIndex + 1 : 0}-${Math.min(startIndex + pageSize, purchases.length)} / ${new Intl.NumberFormat("ko-KR").format(purchases.length)}`;
+  pageNumber.textContent = `${currentPage} / ${pageCount}`;
+  previousPageButton.disabled = currentPage <= 1;
+  nextPageButton.disabled = currentPage >= pageCount;
   recordsBody.replaceChildren();
   emptyState.classList.toggle("hidden", purchases.length > 0);
-  purchases.forEach((purchase) => {
+  pagePurchases.forEach((purchase) => {
     const shopName = state.shops.find((shop) => shop.id === purchase.shopId)?.name ?? "삭제된 쇼핑몰";
     const cardName = state.cards.find((card) => card.id === purchase.cardId)?.name ?? "삭제된 구매 수단";
     const row = document.createElement("tr");
@@ -345,6 +364,7 @@ purchaseForm.addEventListener("submit", (event) => {
   }
   if (editingPurchaseId) state.purchases = state.purchases.map((item) => item.id === editingPurchaseId ? purchase : item);
   else state.purchases.push(purchase);
+  currentPage = 1;
   persistAndRender();
   resetPurchaseForm();
   showToast(wasEditing ? "구매 기록을 수정했습니다." : "구매 기록을 추가했습니다.");
@@ -375,8 +395,26 @@ document.querySelector("#shop-tab").addEventListener("click", () => { managingTy
 document.querySelector("#card-tab").addEventListener("click", () => { managingType = "cards"; editingListItemId = null; renderManager(); });
 document.querySelector("#close-manager").addEventListener("click", () => managerDialog.close());
 document.querySelector("#cancel-edit").addEventListener("click", resetPurchaseForm);
-document.querySelector("#search-input").addEventListener("input", renderRecords);
-document.querySelector("#month-filter").addEventListener("input", renderRecords);
+document.querySelector("#month-filter").addEventListener("input", () => { currentPage = 1; renderRecords(); });
+document.querySelector("#search-input").addEventListener("input", () => { currentPage = 1; renderRecords(); });
+pageSizeSelect.addEventListener("change", () => {
+  const selectedSize = Number(pageSizeSelect.value);
+  if (!PAGE_SIZES.includes(selectedSize)) return;
+  pageSize = selectedSize;
+  currentPage = 1;
+  localStorage.setItem(PAGE_SIZE_STORAGE_KEY, String(pageSize));
+  renderRecords();
+});
+previousPageButton.addEventListener("click", () => {
+  if (currentPage <= 1) return;
+  currentPage -= 1;
+  renderRecords();
+});
+nextPageButton.addEventListener("click", () => {
+  if (currentPage >= Math.ceil(getVisiblePurchases().length / pageSize)) return;
+  currentPage += 1;
+  renderRecords();
+});
 document.querySelector("#export-button").addEventListener("click", exportCsv);
 managerDialog.addEventListener("click", (event) => {
   if (event.target === managerDialog) managerDialog.close();
@@ -384,6 +422,7 @@ managerDialog.addEventListener("click", (event) => {
 
 document.querySelector("#today-label").textContent = new Intl.DateTimeFormat("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" }).format(new Date());
 document.querySelector("#month-filter").value = state.imports.length ? "" : dateString().slice(0, 7);
+pageSizeSelect.value = String(pageSize);
 purchaseDate.value = dateString();
 importLegacyRecordsFromHash();
 persistAndRender();

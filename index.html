@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
-    <script src="app.js?v=legacy-import-2" defer></script>
+    <script src="app.js?v=pagination-1" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -96,6 +96,15 @@
               <tbody id="records-body"></tbody>
             </table>
             <div class="empty-state" id="empty-state"><span class="empty-mark">＋</span><strong>아직 기록이 없어요</strong><p>첫 구매를 기록하고 소비 흐름을 확인해 보세요.</p></div>
+          </div>
+          <div class="pagination-bar" role="group" aria-label="기록 페이지 이동">
+            <label class="page-size-control"><span>페이지당</span><select id="page-size" aria-label="페이지당 표시 개수"><option value="20">20개</option><option value="50">50개</option><option value="100">100개</option></select></label>
+            <span class="page-range" id="page-range">0-0 / 0</span>
+            <nav class="pagination-actions" aria-label="기록 페이지">
+              <button class="page-button" id="previous-page" type="button" aria-label="이전 페이지" title="이전 페이지">‹</button>
+              <span class="page-number" id="page-number">1 / 1</span>
+              <button class="page-button" id="next-page" type="button" aria-label="다음 페이지" title="다음 페이지">›</button>
+            </nav>
           </div>
         </section>
         <footer class="page-footer"><span>산 기록 <i></i> 작은 기록이 더 나은 소비를 만듭니다.</span><span>LOCAL ONLY · YOUR DATA STAYS HERE</span></footer>

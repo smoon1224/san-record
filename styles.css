@@ -118,6 +118,16 @@ th:last-child, td:last-child { padding-right: 11px; }
 .empty-mark { display: grid; width: 30px; height: 30px; margin-bottom: 8px; place-items: center; border: 1px dashed #b6c4b5; border-radius: 50%; color: #729078; font-size: 17px; }
 .empty-state strong { color: #596459; font-size: 11px; font-weight: 600; }
 .empty-state p { margin: 4px 0 0; color: #a0a79d; font-size: 9px; }
+.pagination-bar { display: flex; min-height: 51px; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 11px; border: 1px solid #e6e8df; border-top: 0; border-radius: 0 0 4px 4px; background: #fffefa; color: #858d83; font-size: 10px; }
+.page-size-control { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.page-size-control select { height: 31px; padding: 0 7px; border: 1px solid #e1e5dc; border-radius: 3px; outline: 0; background: #fff; color: #596359; font-size: 10px; }
+.page-size-control select:focus { border-color: #91ae95; box-shadow: 0 0 0 2px #e6efe6; }
+.page-range { margin-left: auto; white-space: nowrap; }
+.pagination-actions { display: inline-flex; align-items: center; gap: 8px; }
+.page-button { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid #e1e5dc; border-radius: 3px; background: #fff; color: #4f6252; font-size: 18px; line-height: 1; }
+.page-button:hover:not(:disabled) { border-color: #b7c8b7; background: #f3f7f1; }
+.page-button:disabled { cursor: default; opacity: .4; }
+.page-number { min-width: 39px; color: #6f786e; text-align: center; font-variant-numeric: tabular-nums; }
 .page-footer { display: flex; justify-content: space-between; margin-top: 23px; color: #a0a69d; font-size: 8px; letter-spacing: .2px; }
 .page-footer i { display: inline-block; width: 3px; height: 3px; margin: 0 6px 2px; border-radius: 50%; background: #adb7aa; }
 .manager-dialog { width: min(460px, calc(100vw - 32px)); max-height: min(680px, calc(100vh - 40px)); padding: 24px; border: 1px solid #e4e8df; border-radius: 6px; background: #fffefa; color: var(--ink); box-shadow: 0 18px 70px #2737292b; }
@@ -179,6 +189,9 @@ th:last-child, td:last-child { padding-right: 11px; }
   .table-wrap { min-height: 200px; }
   table { min-width: 700px; }
   .empty-state { min-width: 700px; }
+  .pagination-bar { flex-wrap: wrap; gap: 8px; padding: 8px; }
+  .page-range { margin-left: auto; }
+  .pagination-actions { margin-left: auto; }
   .page-footer { gap: 8px; flex-direction: column; }
 }
 @media (max-width: 400px) {
