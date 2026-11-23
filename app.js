@@ -3,6 +3,7 @@ const defaultState = {
   shops: ["지마켓", "쿠팡", "네이버쇼핑"].map((name) => ({ id: crypto.randomUUID(), name })),
   cards: ["신한하이", "현대카드", "국민카드"].map((name) => ({ id: crypto.randomUUID(), name })),
   purchases: [],
+  imports: [],
 };
 
 function loadState() {
@@ -382,7 +383,7 @@ managerDialog.addEventListener("click", (event) => {
 });
 
 document.querySelector("#today-label").textContent = new Intl.DateTimeFormat("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" }).format(new Date());
-document.querySelector("#month-filter").value = dateString().slice(0, 7);
+document.querySelector("#month-filter").value = state.imports.length ? "" : dateString().slice(0, 7);
 purchaseDate.value = dateString();
 importLegacyRecordsFromHash();
 persistAndRender();
