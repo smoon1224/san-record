@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f5ef" />
+    <title>산 기록 | 구매 장부</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#top" aria-label="산 기록 홈">
+          <span class="brand-mark">S.</span>
+          <span class="brand-copy"><strong>산 기록</strong><small>PERSONAL LEDGER</small></span>
+        </a>
+        <div class="sidebar-rule"></div>
+        <p class="side-label">WORKSPACE</p>
+        <a class="side-link active" href="#records"><span class="side-icon">▤</span>구매 내역</a>
+        <button class="side-link" id="manage-shops-side"><span class="side-icon">⌂</span>쇼핑몰 관리</button>
+        <button class="side-link" id="manage-cards-side"><span class="side-icon">▭</span>구매 수단 관리</button>
+        <div class="sidebar-bottom">
+          <span class="status-dot"></span>
+          <span>이 브라우저에 안전하게 저장</span>
+        </div>
+      </aside>
+
+      <main class="main-content" id="top">
+        <header class="topbar">
+          <div class="breadcrumb">MY SPACE <span>/</span> 구매 내역</div>
+          <div class="topbar-actions">
+            <span class="today-label" id="today-label"></span>
+            <button class="button button-quiet" id="export-button" type="button"><span aria-hidden="true">↓</span> CSV 내보내기</button>
+          </div>
+        </header>
+
+        <section class="page-heading" id="records">
+          <div>
+            <p class="eyebrow">PURCHASE JOURNAL <span class="eyebrow-line"></span></p>
+            <h1>구매 내역</h1>
+            <p class="heading-description">산 것들을 차곡차곡, 나만의 소비 기록으로.</p>
+          </div>
+          <div class="heading-stamp"><span>기록은</span><strong>가볍게</strong><span>소비는 선명하게</span></div>
+        </section>
+
+        <section class="summary-grid" aria-label="구매 요약">
+          <article class="summary-panel summary-primary">
+            <div class="summary-top"><span>이번 달 구매 금액</span><span class="summary-glyph">₩</span></div>
+            <strong class="summary-value" id="month-total">₩0</strong>
+            <span class="summary-note" id="month-caption">이번 달 기록 기준</span>
+          </article>
+          <article class="summary-panel">
+            <div class="summary-top"><span>이번 달 구매 건수</span><span class="summary-glyph glyph-coral">#</span></div>
+            <strong class="summary-value" id="month-count">0<span class="value-unit">건</span></strong>
+            <span class="summary-note">기록된 구매</span>
+          </article>
+          <article class="summary-panel">
+            <div class="summary-top"><span>전체 누적 금액</span><span class="summary-glyph glyph-blue">↗</span></div>
+            <strong class="summary-value" id="all-total">₩0</strong>
+            <span class="summary-note" id="all-caption">전체 기록 기준</span>
+          </article>
+        </section>
+
+        <section class="entry-section" aria-labelledby="entry-title">
+          <div class="section-heading">
+            <div class="section-title-wrap"><span class="section-index">01</span><div><h2 id="entry-title">새 구매 기록</h2><p>구매 정보를 입력해 주세요.</p></div></div>
+            <span class="required-note"><i></i> 필수 항목</span>
+          </div>
+          <form id="purchase-form" class="purchase-form">
+            <label class="field field-date"><span>구매 날짜 <b>*</b></span><input id="purchase-date" name="date" type="date" required /></label>
+            <label class="field"><span>쇼핑몰 <b>*</b></span><select id="purchase-shop" name="shop" required></select></label>
+            <label class="field"><span>구매 수단 <b>*</b></span><select id="purchase-card" name="card" required></select></label>
+            <label class="field field-amount"><span>금액 <b>*</b></span><div class="amount-input"><input id="purchase-amount" name="amount" type="number" min="1" step="1" placeholder="0" required /><span>원</span></div></label>
+            <label class="field field-product"><span>구매한 물품 <b>*</b></span><input id="purchase-product" name="product" type="text" maxlength="100" placeholder="예: 무선 키보드" required /></label>
+            <button class="button button-primary submit-button" id="submit-button" type="submit"><span aria-hidden="true">＋</span> 기록 추가</button>
+            <button class="button button-cancel hidden" id="cancel-edit" type="button">수정 취소</button>
+          </form>
+          <div class="form-manage-links"><span>목록 관리</span><button type="button" id="manage-shops-inline">쇼핑몰 추가 / 수정 <span>↗</span></button><i></i><button type="button" id="manage-cards-inline">구매 수단 추가 / 수정 <span>↗</span></button></div>
+        </section>
+
+        <section class="records-section" aria-labelledby="records-title">
+          <div class="section-heading records-heading">
+            <div class="section-title-wrap"><span class="section-index">02</span><div><h2 id="records-title">기록 목록</h2><p><span id="visible-count">0</span>건의 구매 내역</p></div></div>
+            <div class="filters">
+              <label class="filter-search"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="물품, 쇼핑몰 검색" aria-label="물품 또는 쇼핑몰 검색" /></label>
+              <input id="month-filter" class="month-filter" type="month" aria-label="월별 필터" />
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>구매 날짜</th><th>구매한 물품</th><th>쇼핑몰</th><th>구매 수단</th><th class="align-right">금액</th><th aria-label="관리"></th></tr></thead>
+              <tbody id="records-body"></tbody>
+            </table>
+            <div class="empty-state" id="empty-state"><span class="empty-mark">＋</span><strong>아직 기록이 없어요</strong><p>첫 구매를 기록하고 소비 흐름을 확인해 보세요.</p></div>
+          </div>
+        </section>
+        <footer class="page-footer"><span>산 기록 <i></i> 작은 기록이 더 나은 소비를 만듭니다.</span><span>LOCAL ONLY · YOUR DATA STAYS HERE</span></footer>
+      </main>
+    </div>
+
+    <dialog class="manager-dialog" id="manager-dialog" aria-labelledby="manager-title">
+      <div class="dialog-header"><div><p class="eyebrow">SETTINGS <span class="eyebrow-line"></span></p><h2 id="manager-title">목록 관리</h2></div><button class="icon-button" id="close-manager" type="button" aria-label="닫기">×</button></div>
+      <div class="manager-tabs" role="tablist" aria-label="관리 항목"><button class="manager-tab active" id="shop-tab" type="button" role="tab">쇼핑몰</button><button class="manager-tab" id="card-tab" type="button" role="tab">구매 수단</button></div>
+      <form class="manager-form" id="manager-form"><label class="visually-hidden" for="manager-name">이름</label><input id="manager-name" type="text" maxlength="40" placeholder="이름 입력" required /><button class="button button-primary" id="manager-submit" type="submit">추가</button></form>
+      <p class="manager-hint" id="manager-hint"></p>
+      <ul class="manager-list" id="manager-list"></ul>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
