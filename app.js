@@ -8,7 +8,9 @@ const defaultState = {
 function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (saved && Array.isArray(saved.shops) && Array.isArray(saved.cards) && Array.isArray(saved.purchases)) return saved;
+    if (saved && Array.isArray(saved.shops) && Array.isArray(saved.cards) && Array.isArray(saved.purchases)) {
+      return { ...saved, imports: Array.isArray(saved.imports) ? saved.imports : [] };
+    }
   } catch (error) {
     console.warn("저장된 구매 기록을 읽지 못했습니다.", error);
   }
@@ -124,6 +126,86 @@ function renderSummary() {
 
 function escapeHtml(value) {
   return value.replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+}
+
+function importLegacyRecordsFromHash() {
+  const encodedPayload = window.location.hash.match(/^#import=([A-Za-z0-9_-]+)$/)?.[1];
+  if (!encodedPayload) return;
+
+  try {
+    const base64 = encodedPayload.replaceAll("-", "+").replaceAll("_", "/");
+    const binary = atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, "="));
+    const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    const payload = JSON.parse(new TextDecoder().decode(bytes));
+    if (payload?.type !== "legacy-purchases" || typeof payload.sourceKey !== "string" || !Array.isArray(payload.rows)) {
+      throw new Error("가져오기 데이터 형식이 올바르지 않습니다.");
+    }
+    if (state.imports.includes(payload.sourceKey)) {
+      showToast("이 원본 자료는 이미 가져왔습니다.");
+      return;
+    }
+
+    const rows = payload.rows.map((row) => {
+      if (!Array.isArray(row) || row.length !== 5) throw new Error("구매 기록 형식이 올바르지 않습니다.");
+      const [date, cardValue, amountValue, productValue, shopValue] = row;
+      const amount = Number(String(amountValue).replace(/[^0-9]/g, ""));
+      const product = String(productValue).trim();
+      const shop = String(shopValue).trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isSafeInteger(amount) || amount < 1 || !product || !shop) {
+        throw new Error("날짜, 금액, 물품명 또는 쇼핑몰이 비어 있는 기록이 있습니다.");
+      }
+      return { date, card: String(cardValue).trim() || "미지정", amount, product, shop };
+    });
+    if (!rows.length) throw new Error("가져올 구매 기록이 없습니다.");
+
+    const hasPurchases = state.purchases.length > 0;
+    const defaultShopNames = defaultState.shops.map((item) => item.name);
+    const defaultCardNames = defaultState.cards.map((item) => item.name);
+    const hasCustomShops = state.shops.some((item) => !defaultShopNames.includes(item.name));
+    const hasCustomCards = state.cards.some((item) => !defaultCardNames.includes(item.name));
+    const shops = hasPurchases || hasCustomShops ? [...state.shops] : [];
+    const cards = hasPurchases || hasCustomCards ? [...state.cards] : [];
+    const findOrAdd = (items, name) => {
+      let item = items.find((candidate) => candidate.name === name);
+      if (!item) {
+        item = { id: crypto.randomUUID(), name };
+        items.push(item);
+      }
+      return item.id;
+    };
+    const shopIds = new Map();
+    const cardIds = new Map();
+    rows.forEach((row) => {
+      if (!shopIds.has(row.shop)) shopIds.set(row.shop, findOrAdd(shops, row.shop));
+      if (!cardIds.has(row.card)) cardIds.set(row.card, findOrAdd(cards, row.card));
+    });
+
+    const importedAt = Date.now();
+    state = {
+      shops,
+      cards,
+      purchases: [
+        ...state.purchases,
+        ...rows.map((row, index) => ({
+          id: crypto.randomUUID(),
+          date: row.date,
+          shopId: shopIds.get(row.shop),
+          cardId: cardIds.get(row.card),
+          amount: row.amount,
+          product: row.product,
+          createdAt: importedAt - index,
+        })),
+      ],
+      imports: [...state.imports, payload.sourceKey],
+    };
+    document.querySelector("#month-filter").value = "";
+    showToast(`${rows.length.toLocaleString("ko-KR")}건의 구매 기록을 가져왔습니다.`);
+  } catch (error) {
+    console.error("구매 기록 가져오기에 실패했습니다.", error);
+    showToast("구매 기록을 가져오지 못했습니다. 원본 자료를 확인해 주세요.");
+  } finally {
+    history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+  }
 }
 
 function showToast(message) {
@@ -302,4 +384,5 @@ managerDialog.addEventListener("click", (event) => {
 document.querySelector("#today-label").textContent = new Intl.DateTimeFormat("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" }).format(new Date());
 document.querySelector("#month-filter").value = dateString().slice(0, 7);
 purchaseDate.value = dateString();
+importLegacyRecordsFromHash();
 persistAndRender();
