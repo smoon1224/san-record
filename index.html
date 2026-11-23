@@ -65,9 +65,26 @@
           </article>
         </section>
 
+        <section class="entry-section" aria-labelledby="entry-title">
+          <div class="section-heading">
+            <div class="section-title-wrap"><span class="section-index">01</span><div><h2 id="entry-title">새 구매 기록</h2><p>구매 정보를 입력해 주세요.</p></div></div>
+            <span class="required-note"><i></i> 필수 항목</span>
+          </div>
+          <form id="purchase-form" class="purchase-form">
+            <label class="field field-date"><span>구매 날짜 <b>*</b></span><input id="purchase-date" name="date" type="date" required /></label>
+            <label class="field"><span>쇼핑몰 <b>*</b></span><select id="purchase-shop" name="shop" required></select></label>
+            <label class="field"><span>구매 수단 <b>*</b></span><select id="purchase-card" name="card" required></select></label>
+            <label class="field field-amount"><span>금액 <b>*</b></span><div class="amount-input"><input id="purchase-amount" name="amount" type="number" min="1" step="1" placeholder="0" required /><span>원</span></div></label>
+            <label class="field field-product"><span>구매한 물품 <b>*</b></span><input id="purchase-product" name="product" type="text" maxlength="100" placeholder="예: 무선 키보드" required /></label>
+            <button class="button button-primary submit-button" id="submit-button" type="submit"><span aria-hidden="true">＋</span> 기록 추가</button>
+            <button class="button button-cancel hidden" id="cancel-edit" type="button">수정 취소</button>
+          </form>
+          <div class="form-manage-links"><span>목록 관리</span><button type="button" id="manage-shops-inline">쇼핑몰 추가 / 수정 <span>↗</span></button><i></i><button type="button" id="manage-cards-inline">구매 수단 추가 / 수정 <span>↗</span></button></div>
+        </section>
+
         <section class="records-section" id="records" aria-labelledby="records-title">
           <div class="section-heading records-heading">
-            <div class="section-title-wrap"><span class="section-index">01</span><div><h2 id="records-title">기록 목록</h2><p><span id="visible-count">0</span>건의 구매 내역</p></div></div>
+            <div class="section-title-wrap"><span class="section-index">02</span><div><h2 id="records-title">기록 목록</h2><p><span id="visible-count">0</span>건의 구매 내역</p></div></div>
             <div class="filters">
               <label class="filter-search"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="물품, 쇼핑몰 검색" aria-label="물품 또는 쇼핑몰 검색" /></label>
               <input id="month-filter" class="month-filter" type="month" aria-label="월별 필터" />
@@ -89,23 +106,6 @@
               <button class="page-button" id="next-page" type="button" aria-label="다음 페이지" title="다음 페이지">›</button>
             </nav>
           </div>
-        </section>
-
-        <section class="entry-section" aria-labelledby="entry-title">
-          <div class="section-heading">
-            <div class="section-title-wrap"><span class="section-index">02</span><div><h2 id="entry-title">새 구매 기록</h2><p>구매 정보를 입력해 주세요.</p></div></div>
-            <span class="required-note"><i></i> 필수 항목</span>
-          </div>
-          <form id="purchase-form" class="purchase-form">
-            <label class="field field-date"><span>구매 날짜 <b>*</b></span><input id="purchase-date" name="date" type="date" required /></label>
-            <label class="field"><span>쇼핑몰 <b>*</b></span><select id="purchase-shop" name="shop" required></select></label>
-            <label class="field"><span>구매 수단 <b>*</b></span><select id="purchase-card" name="card" required></select></label>
-            <label class="field field-amount"><span>금액 <b>*</b></span><div class="amount-input"><input id="purchase-amount" name="amount" type="number" min="1" step="1" placeholder="0" required /><span>원</span></div></label>
-            <label class="field field-product"><span>구매한 물품 <b>*</b></span><input id="purchase-product" name="product" type="text" maxlength="100" placeholder="예: 무선 키보드" required /></label>
-            <button class="button button-primary submit-button" id="submit-button" type="submit"><span aria-hidden="true">＋</span> 기록 추가</button>
-            <button class="button button-cancel hidden" id="cancel-edit" type="button">수정 취소</button>
-          </form>
-          <div class="form-manage-links"><span>목록 관리</span><button type="button" id="manage-shops-inline">쇼핑몰 추가 / 수정 <span>↗</span></button><i></i><button type="button" id="manage-cards-inline">구매 수단 추가 / 수정 <span>↗</span></button></div>
         </section>
         <footer class="page-footer"><span>산 기록 <i></i> 작은 기록이 더 나은 소비를 만듭니다.</span><span>LOCAL ONLY · YOUR DATA STAYS HERE</span></footer>
       </main>
