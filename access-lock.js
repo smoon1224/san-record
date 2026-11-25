@@ -1,8 +1,8 @@
 const ACCESS_SESSION_KEY = "san-record-access-unlocked-v1";
-const dialog = document.querySelector("#account-dialog");
-const form = document.querySelector("#auth-form");
-const passwordInput = document.querySelector("#password-input");
-const message = document.querySelector("#account-message");
+const dialog = document.querySelector("#account-dialog") || document.querySelector("#investment-account-dialog");
+const form = document.querySelector("#auth-form") || document.querySelector("#investment-password-form");
+const passwordInput = document.querySelector("#password-input") || document.querySelector("#investment-password");
+const message = document.querySelector("#account-message") || document.querySelector("#investment-password-message");
 
 function fromBase64(value) {
   const binary = atob(value);
@@ -45,6 +45,11 @@ async function unlockPassword() {
     sessionStorage.setItem(ACCESS_SESSION_KEY, "unlocked");
     document.body.classList.remove("auth-locked");
     dialog.close();
+    if (document.querySelector("#investment-form") && !document.querySelector('script[src*="investment.js"]')) {
+      const script = document.createElement("script");
+      script.src = `investment.js?v=investment-2-${Date.now()}`;
+      document.body.append(script);
+    }
   } catch (error) {
     console.error(error);
     message.textContent = "잠금 파일을 확인하지 못했습니다.";
