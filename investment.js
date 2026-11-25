@@ -1,3 +1,4 @@
+window.investmentScriptStarted = true;
 const STORAGE_KEY = "san-record-investment-v1";
 
 const seedRows = [
