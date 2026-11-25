@@ -424,5 +424,28 @@ document.querySelector("#month-filter").value = state.imports.length ? "" : date
 pageSizeSelect.value = String(pageSize);
 purchaseDate.value = dateString();
 importLegacyRecordsFromHash();
-persistAndRender();
+seedLegacyLedgerIfEmpty().finally(() => {
+  persistAndRender();
+});
+
+async function seedLegacyLedgerIfEmpty() {
+  if (state.purchases.length) return;
+  try {
+    const response = await fetch("legacy-ledger.json", { cache: "no-store" });
+    if (!response.ok) throw new Error("기본 장부 파일을 읽지 못했습니다.");
+    const seed = await response.json();
+    if (!Array.isArray(seed.shops) || !Array.isArray(seed.cards) || !Array.isArray(seed.purchases)) return;
+    state = {
+      shops: seed.shops,
+      cards: seed.cards,
+      purchases: seed.purchases,
+      imports: Array.isArray(seed.imports) ? seed.imports : ["legacy-password-seed-v1"],
+    };
+    saveState();
+    document.querySelector("#month-filter").value = "";
+    persistAndRender();
+  } catch (error) {
+    console.warn("기본 장부를 불러오지 못했습니다.", error);
+  }
+}
 
