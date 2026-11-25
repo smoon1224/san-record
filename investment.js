@@ -59,14 +59,28 @@ async function initializeInvestmentLedger() {
       if (!form.reportValidity()) return;
       const type = document.querySelector("#investment-type").value;
       const date = document.querySelector("#investment-date").value;
+      const exchangeDollar = type === "exchange" ? Number(document.querySelector("#investment-exchange").value) : 0;
+      const exchangeRate = type === "exchange" ? Number(document.querySelector("#investment-rate").value) : 0;
+      const exchangeWon = type === "exchange" ? Math.round(exchangeDollar * exchangeRate) : 0;
+      const investWon = type === "invest" ? Number(document.querySelector("#investment-invest").value) : 0;
+
+      if (type === "exchange" && exchangeDollar > dollarBalance) {
+        window.alert("달러 잔액보다 많이 환전할 수 없습니다.");
+        return;
+      }
+      if (type === "invest" && investWon > exchangeBalance) {
+        window.alert("환전된 원화 잔액보다 많이 투자할 수 없습니다.");
+        return;
+      }
+
       records.push({
         id: crypto.randomUUID(),
         date,
-        dollar: type === "dollar" ? Number(document.querySelector("#investment-dollar").value) : 0,
+        dollar: type === "dollar" ? Number(document.querySelector("#investment-dollar").value) : type === "exchange" ? -exchangeDollar : 0,
         note: document.querySelector("#investment-note").value.trim(),
-        exchange: type === "exchange" ? Number(document.querySelector("#investment-exchange").value) : 0,
-        rate: type === "exchange" ? Number(document.querySelector("#investment-rate").value) : 0,
-        invested: type === "invest" ? Number(document.querySelector("#investment-invest").value) : 0,
+        exchange: type === "exchange" ? exchangeWon : type === "invest" ? -investWon : 0,
+        rate: exchangeRate,
+        invested: investWon,
       });
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ records }));
       initializeInvestmentLedger();
