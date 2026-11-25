@@ -47,7 +47,7 @@ async function unlockPassword() {
     dialog.close();
     if (document.querySelector("#investment-form") && !document.querySelector('script[src*="investment.js"]')) {
       const script = document.createElement("script");
-      script.src = `investment.js?v=investment-2-${Date.now()}`;
+      script.src = `investment.js?v=investment-json-${Date.now()}`;
       document.body.append(script);
     }
   } catch (error) {
