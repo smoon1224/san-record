@@ -9,7 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
-    <script src="app.js?v=pagination-1" defer></script>
+    <script src="access-lock.js?v=password-lock-1" defer></script>
+    <script src="app.js?v=password-lock-1" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -25,7 +26,7 @@
         <button class="side-link" id="manage-cards-side"><span class="side-icon">▭</span>구매 수단 관리</button>
         <div class="sidebar-bottom">
           <span class="status-dot"></span>
-          <span>이 브라우저에 안전하게 저장</span>
+          <span id="storage-status">이 브라우저에 저장</span>
         </div>
       </aside>
 
@@ -34,6 +35,7 @@
           <div class="breadcrumb">MY SPACE <span>/</span> 구매 내역</div>
           <div class="topbar-actions">
             <span class="today-label" id="today-label"></span>
+            <button class="button button-quiet" id="account-button" type="button">로그인</button>
             <button class="button button-quiet" id="export-button" type="button"><span aria-hidden="true">↓</span> CSV 내보내기</button>
           </div>
         </header>
@@ -117,6 +119,15 @@
       <form class="manager-form" id="manager-form"><label class="visually-hidden" for="manager-name">이름</label><input id="manager-name" type="text" maxlength="40" placeholder="이름 입력" required /><button class="button button-primary" id="manager-submit" type="submit">추가</button></form>
       <p class="manager-hint" id="manager-hint"></p>
       <ul class="manager-list" id="manager-list"></ul>
+    </dialog>
+    <dialog class="manager-dialog account-dialog" id="account-dialog" aria-labelledby="account-title">
+      <div class="dialog-header"><div><p class="eyebrow">PRIVATE LEDGER <span class="eyebrow-line"></span></p><h2 id="account-title">비밀번호 잠금</h2></div></div>
+      <form class="auth-form" id="auth-form">
+        <label class="auth-field"><span>비밀번호</span><input id="password-input" type="password" autocomplete="current-password" required /></label>
+        <p class="password-hint">힌트: p8</p>
+        <button class="button button-primary" id="password-submit" type="submit">확인</button>
+      </form>
+      <p class="account-message" id="account-message" role="status" aria-live="polite"></p>
     </dialog>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </body>

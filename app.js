@@ -1,4 +1,4 @@
-const STORAGE_KEY = "san-record-ledger-v1";
+﻿const STORAGE_KEY = "san-record-ledger-v1";
 const PAGE_SIZE_STORAGE_KEY = "san-record-page-size-v1";
 const PAGE_SIZES = [20, 50, 100];
 const defaultState = {
@@ -16,7 +16,6 @@ function loadState() {
     }
   } catch (error) {
     console.warn("저장된 구매 기록을 읽지 못했습니다.", error);
-    currentPage = 1;
   }
   return structuredClone(defaultState);
 }
@@ -426,3 +425,4 @@ pageSizeSelect.value = String(pageSize);
 purchaseDate.value = dateString();
 importLegacyRecordsFromHash();
 persistAndRender();
+
