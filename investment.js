@@ -51,6 +51,34 @@ async function initializeInvestmentLedger() {
     body.append(tr);
   });
 
+  const typeSelect = document.querySelector("#investment-type");
+  const updateFields = () => {
+    const type = typeSelect.value;
+    const dollarField = document.querySelector("#dollar-field");
+    const exchangeField = document.querySelector("#exchange-field");
+    const rateField = document.querySelector("#rate-field");
+    const investField = document.querySelector("#invest-field");
+    const dollarLabel = document.querySelector("#dollar-label");
+
+    dollarField.classList.toggle("hidden", type !== "dollar");
+    exchangeField.classList.toggle("hidden", type !== "exchange");
+    rateField.classList.toggle("hidden", type !== "exchange");
+    investField.classList.toggle("hidden", type !== "invest");
+
+    if (dollarLabel) dollarLabel.innerHTML = type === "exchange" ? "환전할 달러 <b>*</b>" : "받은 달러 <b>*</b>";
+
+    document.querySelector("#investment-dollar").required = type === "dollar";
+    document.querySelector("#investment-exchange").required = type === "exchange";
+    document.querySelector("#investment-rate").required = type === "exchange";
+    document.querySelector("#investment-invest").required = type === "invest";
+  };
+
+  if (typeSelect && !typeSelect.dataset.initialized) {
+    typeSelect.dataset.initialized = "true";
+    typeSelect.addEventListener("change", updateFields);
+  }
+  updateFields();
+
   const form = document.querySelector("#investment-form");
   if (form && !form.dataset.initialized) {
     form.dataset.initialized = "true";
